@@ -1,32 +1,39 @@
 const mongoose = require("mongoose");
+const bcrypt = require("bcryptjs");
 const Customer = mongoose.model("Customer");
 
 const addCustomer = function(request, response) {
-    const newCustomer = {
-        name: request.body.name,
-        username: request.body.username,
-        password: request.body.password,
-        address: request.body.address,
-        birthDate: request.body.birthDate,
-        email: request.body.email,
-        activeStatus: true
-    }
 
-    const responseCollection = _createResponseCollection();
-
-    Customer.create(newCustomer).then(response => {
-        if(!response) {
-            responseCollection.status = 401;
-            responseCollection.message = {message: "Not able to create a customer"}
-            return;
-        }
-        responseCollection.status = 200;
-        responseCollection.message = {message: "Customer created successfully"}
-    }).catch(error => {
-        responseCollection.status = 500;
-        responseCollection.message = error
-    }).finally(()=> {
-        _sendResponse(response, responseCollection);
+    bcrypt.genSalt(2).then(salt => {
+        bcrypt.hash(request.body.password, salt).then(hashPassword => {
+            const newCustomer = {
+                name: request.body.name,
+                username: request.body.username,
+                password: hashPassword,
+                address: request.body.address,
+                birthDate: request.body.birthDate,
+                email: request.body.email,
+                activeStatus: true
+            }
+        
+            const responseCollection = _createResponseCollection();
+        
+            Customer.create(newCustomer).then(response => {
+                if(!response) {
+                    responseCollection.status = 401;
+                    responseCollection.message = {message: "Not able to create a customer"}
+                    return;
+                }
+                responseCollection.status = 200;
+                responseCollection.message = {message: "Customer created successfully"}
+            }).catch(error => {
+                responseCollection.status = 500;
+                responseCollection.message = error
+            }).finally(()=> {
+                _sendResponse(response, responseCollection);
+            })
+            
+        })
     })
 }
 const allCustomers = function(request, response) {
