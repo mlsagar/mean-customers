@@ -1,0 +1,10 @@
+<div *ngIf="customer">
+    <h4>{{customer.name}}</h4>
+    <h4>{{customer.username}}</h4>
+    <h4>{{customer.password}}</h4>
+    <h4>{{customer.address}}</h4>
+    <h4>{{customer.birthDate}}</h4>
+    <h4>{{customer.activeStatus}}</h4>
+</div>
+
+<button type="button" (click)="updateStatus()">Update Status</button>
